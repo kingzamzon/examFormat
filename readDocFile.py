@@ -42,3 +42,8 @@ for k in tupuleArr:
 
     json_li.append(dict2)
 print(json.dumps(json_li, indent=4))
+
+# Print to json file
+out_file = open('test2.json', 'w')
+json.dump(json_li, out_file, indent = 4)
+out_file.close()

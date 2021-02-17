@@ -6,18 +6,9 @@ from pathlib import Path
 
 '''
 Format to run file: python directoryPath:
-python 'pop/content/EdSofta SSCE 2021 Objectives/Accounts/'
-'''
+python jsonFormater.py 'pop/content/EdSofta SSCE 2021 Objectives/Biology/'
 
-directory_path = "%s" % sys.argv[1]
-
-basepath = Path('pop/content/EdSofta SSCE 2021 Objectives/Accounts/')
-files_in_basepath = basepath.iterdir()
-for item in files_in_basepath:
-    if item.is_file():
-        print(item.name)
-
-'''
+Script format json files in a folder to this format:
 {
     question_no: number;
     question: string;
@@ -33,88 +24,74 @@ for item in files_in_basepath:
 }
 '''
 
-json_li = []
+directory_path = "%s" % sys.argv[1]
 
-#fields in the sample file
-fields = ['question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer', 'answer_meta', 'topic', 'difficulty']
-
-with open('pop/content/EdSofta SSCE 2021 Objectives/Accounts/2006.json', 'r') as read_file:
-    #Variable declaration
-    data = json.load(read_file)
-    i = 1
-    answer_i = 0
-
-    list_data_items = list(data.items())
-
-    print("Datatype:", type(data))
-    print("Length:", len(data))
-    print("Available Keys", data['Question 1'].keys())
-
-    #looping
-    for j in data:
-        i = i + 1
+basepath = Path(directory_path)
+files_in_basepath = basepath.iterdir()
+for item in files_in_basepath:
+    if item.is_file() and item.name != '2008.json' and item.name != '2013.json' and item.name != '2015.json':
+        print(item.name)
+        json_li = []
         
-        if(i > len(data)):
-            break
+        # 'pop/content/EdSofta SSCE 2021 Objectives/Biology/2006.json'
+        full_directiory = directory_path+item.name
 
-        # initialize empty object
-        new_fmt = {}
-        dict2 = {}
+        #fields in the sample file
+        fields = ['question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer', 'answer_meta', 'topic', 'difficulty']
 
-        k = 0
-        while k < len(fields):
-            dict2["question_no"] = i
-            if fields[k] == "question":
-                dict2[fields[k]] = data[j]['Question']
-            if fields[k] == "option_a":
-                dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][0]['Value'])[0]
-            if fields[k] == "option_b":
-                dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][1]['Value'])[0]
-            if fields[k] == "option_c":
-                dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][2]['Value'])[0]
-            if fields[k] == "option_d":
-                dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][3]['Value'])[0]
-            if fields[k] == "answer":
-                dict2[fields[k]] = data['Answers'][answer_i]
-            if fields[k] == "answer_meta":
-                dict2[fields[k]] = ''
-            if fields[k] == "topic":
-                dict2[fields[k]] = data[j]['Topic']
-            if fields[k] == "difficulty":
-                dict2[fields[k]] = data[j]['Difficulty']
-            k = k + 1
+        with open(full_directiory, 'r') as read_file:
+            #Variable declaration
+            data = json.load(read_file)
+            i = 1
+            answer_i = 0
 
-        answer_i = answer_i + 1
+            list_data_items = list(data.items())
 
-        json_li.append(dict2)
+            print("Datatype:", type(data))
+            print("Length:", len(data))
+            print("Available Keys", data['Question 1'].keys())
 
-        # print(dict2)
-        # print(json.dumps(json_li, indent=4))
+            #looping
+            for j in data:
+                i = i + 1
+                
+                if(i > len(data)):
+                    break
 
-    out_file = open('kok.json', 'w')
-    json.dump(json_li, out_file, indent = 4)
-    out_file.close()
+                # initialize empty object
+                new_fmt = {}
+                dict2 = {}
 
-    # while i < len(data):
-        # print(i)
-        # print(list_data_items[i][1])
-        # print( list(data.items())[i][1]['Difficulty'])
-        # i = i + 1
+                k = 0
+                while k < len(fields):
+                    dict2["question_no"] = answer_i
+                    if fields[k] == "question":
+                        dict2[fields[k]] = data[j]['Question']
+                    if fields[k] == "option_a":
+                        dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][0]['Value'])[0]
+                    if fields[k] == "option_b":
+                        dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][1]['Value'])[0]
+                    if fields[k] == "option_c":
+                        dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][2]['Value'])[0]
+                    if fields[k] == "option_d":
+                        dict2[fields[k]] = re.findall(r'<span style="font-family:serif;">(.+?)<span>', data[j]['Options'][3]['Value'])[0]
+                    if fields[k] == "answer":
+                        dict2[fields[k]] = data['Answers'][answer_i]
+                    if fields[k] == "answer_meta":
+                        dict2[fields[k]] = ''
+                    if fields[k] == "topic" and 'Topic' in data[j]:
+                        dict2[fields[k]] = data[j]['Topic']
+                    if fields[k] == "difficulty"  and 'Topic' in data[j]:
+                        dict2[fields[k]] = data[j]['Difficulty']
+                    k = k + 1
 
-    # Question 
-    # print(data['Question 32']['Question'])
+                answer_i = answer_i + 1
 
-    # Options
-    # print(data['Question 1']['Options'])
+                json_li.append(dict2)
 
-    #Options 
-    # print(type(data['Question 1']['Options']))
-    # options = data['Question 1']['Options']
-    # for option in options:
-    #     # get options
-    #     print(option['Key'])
-    #     print( re.findall(r'<span style="font-family:serif;">(.+?)<span>',option['Value']) )
+                # print(json.dumps(json_li, indent=4))
 
-    # Answers
-    # Get the first answer
-    # print(data['Answers'][0])
+            out_file = open(item.name, 'w')
+            json.dump(json_li, out_file, indent = 4)
+            out_file.close()
+    
